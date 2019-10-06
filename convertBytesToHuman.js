@@ -13,5 +13,13 @@
  */
 
 export default function convertBytesToHuman(bytes) {
-  // your solution goes here
+  if (typeof(bytes) !== "number" || bytes < 0) 
+    return false
+  let sizes = ['B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB']
+  for (let size of sizes) {
+    if (bytes < 1024 || size === 'YB') {
+      return bytes.toFixed(2) + ' ' + size
+    }
+    bytes /= 1024
+  }
 }
