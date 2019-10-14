@@ -1,5 +1,5 @@
 {
-  "private": true,
+  "private": true, 
   "scripts": {
     "test": "eslint src/components/.",
     "start": "webpack-dev-server --mode=development --hot",
