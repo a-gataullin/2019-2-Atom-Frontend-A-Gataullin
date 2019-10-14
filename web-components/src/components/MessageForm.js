@@ -1,3 +1,4 @@
+/* eslint-disable no-use-before-define */
 /* eslint-disable max-classes-per-file */
 /* eslint-disable no-underscore-dangle */
 const template = document.createElement('template');
@@ -40,86 +41,15 @@ template.innerHTML = `
             text-align: center;
             font-size: 20px;
             padding-top: 3vh;
-            // vertical-align: middle;
-
         }
         
     </style>
     <form>
-        <div id = "head">Arthur</div>
+        <div id="head">Arthur</div>
         <div class="result"></div>
         <form-input name="message-text" placeholder="Введите сообщение"></form-input>
     </form>
 `;
-class MessageView extends HTMLElement {
-  constructor(author, time, text) {
-    super();
-    this.messageText = text;
-    this.messageAuthor = author;
-    this.messageTime = time;
-  }
-
-  connectedCallback() {
-    const template1 = document.createElement('template');
-    template1.innerHTML = `
-        <style>
-            div {
-                min-width: 10vw;
-                border-width: 50px;
-                box-sizing: border-box;
-                //float: right;
-                width: auto;
-                // box-sizing: border-box;
-                background-color: #f3e6f5;
-                padding: 5%;
-                margin: 3vh;
-                // padding-bottom: 10%;
-                margin-right: 2vw;
-                border-radius: 10px;
-                border-bottom-right-radius: 0px;
-                // max-width: 40px;
-                word-wrap:break-word;
-                align-self: flex-end;
-            }
-
-            #text {
-                min-width: 20wh;
-                box-sizing: border-box;
-                // background-color: red;
-                width: auto;
-                margin: 1%;
-                padding: 1%;
-                // padding-bottom: 10%;
-                // margin: 5%;
-                // margin-bottom: 10%;
-                // box-sizing: border-box;
-            }
-
-            #time {
-                min-width: 20wh;
-                margin: 1%;
-                margin-top: -5%;
-                padding: 1%;
-                text-align: end;
-                font-size: 50%;
-            }
-
-            #author {
-                padding: 5%;
-                color: pink
-            }
-        </style>
-        <div class = "msg">
-            <!-- <span id='author'>${this.messageAuthor}</span> -->
-            <p id='text'>${this.messageText}</p>
-            <p id='time'>${this.messageTime}</p>
-        </div>
-    `;
-    this._shadowRoot = this.attachShadow({ mode: 'open' });
-    this._shadowRoot.appendChild(template1.content.cloneNode(true));
-    this.scrollIntoView();
-  }
-}
 class MessageForm extends HTMLElement {
   constructor() {
     super();
@@ -142,7 +72,7 @@ class MessageForm extends HTMLElement {
     }
   }
 
-  onSubmit(event) {
+  _onSubmit(event) {
     event.preventDefault();
     const today = new Date();
     const time = `${today.getHours()}:${today.getMinutes()}`;
@@ -153,11 +83,73 @@ class MessageForm extends HTMLElement {
     this.$message.appendChild(msg);
   }
 
-  onKeyPress(event) {
+  _onKeyPress(event) {
     if (event.keyCode === 13) {
       this.$form.dispatchEvent(new Event('submit'));
     }
   }
 }
+
+class MessageView extends HTMLElement {
+  constructor(author, time, text) {
+    super();
+    this.messageText = text;
+    this.messageAuthor = author;
+    this.messageTime = time;
+  }
+
+  connectedCallback() {
+    const template1 = document.createElement('template');
+    template1.innerHTML = `
+        <style>
+            div {
+                min-width: 10vw;
+                border-width: 50px;
+                box-sizing: border-box;
+                width: auto;
+                background-color: #f3e6f5;
+                padding: 5%;
+                margin: 3vh;
+                margin-right: 2vw;
+                border-radius: 10px;
+                border-bottom-right-radius: 0px;
+                word-wrap:break-word;
+                align-self: flex-end;
+            }
+
+            #text {
+                min-width: 20wh;
+                box-sizing: border-box;
+                width: auto;
+                margin: 1%;
+                padding: 1%;
+            }
+
+            #time {
+                min-width: 20wh;
+                margin: 1%;
+                margin-top: -5%;
+                padding: 1%;
+                text-align: end;
+                font-size: 50%;
+            }
+
+            #author {
+                padding: 5%;
+                color: pink
+            }
+        </style>
+        <div class="msg">
+            <!-- <span id='author'>${this.messageAuthor}</span> -->
+            <p id='text'>${this.messageText}</p>
+            <p id='time'>${this.messageTime}</p>
+        </div>
+    `;
+    this._shadowRoot = this.attachShadow({ mode: 'open' });
+    this._shadowRoot.appendChild(template1.content.cloneNode(true));
+    this.scrollIntoView();
+  }
+}
+
 customElements.define('message-view', MessageView);
 customElements.define('message-form', MessageForm);
