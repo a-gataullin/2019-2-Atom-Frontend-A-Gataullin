@@ -1,6 +1,7 @@
 /* eslint-disable no-use-before-define */
-/* eslint-disable max-classes-per-file */
 /* eslint-disable no-underscore-dangle */
+import MessageView from './MessageView.js'
+
 const template = document.createElement('template');
 template.innerHTML = `
     <style>
@@ -66,21 +67,28 @@ class MessageForm extends HTMLElement {
     if (localStorage.getItem('messages') !== null) {
       this.messagesStorage = JSON.parse(localStorage.getItem('messages'));
       for (let i = 0; i < this.messagesStorage.length; i += 1) {
-        this.$message.appendChild(new MessageView(this.messagesStorage[i].messageAuthor,
-          this.messagesStorage[i].messageTime, this.messagesStorage[i].messageText));
+        const msg = document.createElement('message-view');
+        msg.setAttribute('text', this.messagesStorage[i].text);
+        msg.setAttribute('time', this.messagesStorage[i].time);
+        this.$message.appendChild(msg);
       }
     }
   }
 
   _onSubmit(event) {
     event.preventDefault();
-    const today = new Date();
-    const time = `${today.getHours()}:${today.getMinutes()}`;
-    const msg = new MessageView('localhost', time, this.$input.value);
+    if (this.$input.value.match(/\S/)) {
+      const today = new Date();
+      const time = `${today.getHours()}:${today.getMinutes()}`;
+      const msg = document.createElement('message-view');
+      msg.setAttribute('text', this.$input.value);
+      msg.setAttribute('time', time);
+      this.messagesStorage.push({ text: this.$input.value, time });
+      localStorage.setItem('messages', JSON.stringify(this.messagesStorage));
+      this.$message.appendChild(msg);
+      msg.scrollIntoView();
+    }
     this.$input.$input.value = '';
-    this.messagesStorage.push(msg);
-    localStorage.setItem('messages', JSON.stringify(this.messagesStorage));
-    this.$message.appendChild(msg);
   }
 
   _onKeyPress(event) {
@@ -90,66 +98,5 @@ class MessageForm extends HTMLElement {
   }
 }
 
-class MessageView extends HTMLElement {
-  constructor(author, time, text) {
-    super();
-    this.messageText = text;
-    this.messageAuthor = author;
-    this.messageTime = time;
-  }
-
-  connectedCallback() {
-    const template1 = document.createElement('template');
-    template1.innerHTML = `
-        <style>
-            div {
-                min-width: 10vw;
-                border-width: 50px;
-                box-sizing: border-box;
-                width: auto;
-                background-color: #f3e6f5;
-                padding: 5%;
-                margin: 3vh;
-                margin-right: 2vw;
-                border-radius: 10px;
-                border-bottom-right-radius: 0px;
-                word-wrap:break-word;
-                align-self: flex-end;
-            }
-
-            #text {
-                min-width: 20wh;
-                box-sizing: border-box;
-                width: auto;
-                margin: 1%;
-                padding: 1%;
-            }
-
-            #time {
-                min-width: 20wh;
-                margin: 1%;
-                margin-top: -5%;
-                padding: 1%;
-                text-align: end;
-                font-size: 50%;
-            }
-
-            #author {
-                padding: 5%;
-                color: pink
-            }
-        </style>
-        <div class="msg">
-            <!-- <span id='author'>${this.messageAuthor}</span> -->
-            <p id='text'>${this.messageText}</p>
-            <p id='time'>${this.messageTime}</p>
-        </div>
-    `;
-    this._shadowRoot = this.attachShadow({ mode: 'open' });
-    this._shadowRoot.appendChild(template1.content.cloneNode(true));
-    this.scrollIntoView();
-  }
-}
-
-customElements.define('message-view', MessageView);
 customElements.define('message-form', MessageForm);
+customElements.define('message-view', MessageView);
