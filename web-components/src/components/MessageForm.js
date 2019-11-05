@@ -1,6 +1,6 @@
 /* eslint-disable no-use-before-define */
 /* eslint-disable no-underscore-dangle */
-import MessageView from './MessageView.js'
+import MessageView from './MessageView';
 
 const template = document.createElement('template');
 template.innerHTML = `
